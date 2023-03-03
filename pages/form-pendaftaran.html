@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Pendaftaran</title>
+</head>
+
+<body>
+    <div class="menu">
+        <h3>Menu Tugas Web Desain 1 : </h3>
+        <ul>
+            <li><a href="/fswd3-html-dasar/index.html">Halaman Utama</a></li>
+            <li><a href="/fswd3-html-dasar/pages/heading-paragraph.html">Heading and Paragraph</a></li>
+            <li><a href="/fswd3-html-dasar/pages/text-formatting.html">Text Formatting</a></li>
+            <li><a href="/fswd3-html-dasar/pages/list.html">List</a></li>
+            <li><a href="/fswd3-html-dasar/pages/anchor-image.html">Anchor and Image</a></li>
+        </ul>
+        <h3>Menu Tugas Web Desain 2 : </h3>
+        <ul>
+            <li><a href="/fswd3-html-dasar/pages/nota-pembelian.html">Nota Pembelian</a></li>
+            <li><a href="/fswd3-html-dasar/pages/playlist-video.html">Playlist Video</a></li>
+            <li><a href="/fswd3-html-dasar/pages/form-pendaftaran.html">Form Pendaftaran</a></li>
+            <li><a href="/fswd3-html-dasar/pages/layout-semantic.html">Layout Semantic</a></li>
+        </ul>
+    </div>
+    <h1>Form pendaftaran SIB 2023</h1>
+    <form>
+        <label for="nama">Nama Lengkap</label><br>
+        <input type="text" name="nama" placeholder="Masukkan nama lengkap">
+        <br>
+        <label for="email">Email</label><br>
+        <input type="email" name="email" placeholder="Masukkan email">
+        <br>
+        <label for="phone">No. HP</label><br>
+        <input type="tel" name="phone" pattern="[0-9]{10,14}" placeholder="Masukkan no. HP">
+        <br>
+        <label for="jenis-kelamin">Jenis Kelamin</label><br>
+        <input type="radio" name="jenis-kelamin">Laki-Laki<br>
+        <input type="radio" name="jenis-kelamin">Perempuan
+        <br>
+        <label for="jurusan">Jurusan</label><br>
+        <select name="jurusan" id="jurusan">
+            <option value="informatika">Teknik Informatika</option>
+            <option value="sistem-informasi">Sistem Informasi</option>
+            <option value="teknologi-informasi">Teknologi Informasi</option>
+        </select>
+        <br>
+        <label for="alamat">Alamat</label><br>
+        <textarea name="alamat" id="alamat" cols="30" rows="10" placeholder="Masukkan alamat"></textarea>
+        <br>
+        <label for="upload-foto">Foto</label><br>
+        <input type="file" name="upload-foto">
+        <br>
+        <input type="submit" value="Daftar">
+    </form>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+</body>
+
+</html>
