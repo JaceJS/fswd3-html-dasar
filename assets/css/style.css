@@ -1,0 +1,73 @@
+:root {
+  --main-color: #1564ca;
+  --row1-color: #810c0c;
+  --row1-border-color: #d41c1c;
+  --row1-bg-color: #f77c94;
+  --row2-color: #bbbeeb;
+  --row2-border-color: #3baf66;
+  --row2-bg-color: #04072e;
+  --row3-color: #06f5c1;
+  --row3-border-color: #c2d137;
+  --row3-bg-color: #3e4206;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--main-color);
+  text-align: center;
+}
+
+#judul {
+  color: #fff;
+  margin-top: 2em;
+}
+
+.container {
+  width: 80%;
+  margin: 0 auto;
+  padding: 3em;
+}
+
+/* Card Style */
+.card {
+  float: left;
+  width: 23%;
+  margin: 1%;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.card h4 {
+  padding-top: 0.5em;
+}
+
+.card p {
+  padding: 0.5em;
+  text-align: left;
+}
+
+/* Baris 1 Style */
+.baris-1 .card {
+  color: var(--row1-color);
+  border: 2px solid var(--row1-border-color);
+  background-color: var(--row1-bg-color);
+}
+
+/* Baris 2 Style */
+.baris-2 .card {
+  color: var(--row2-color);
+  border: 2px solid var(--row2-border-color);
+  background-color: var(--row2-bg-color);
+}
+
+/* Baris 3 Style */
+.baris-3 .card {
+  color: var(--row3-color);
+  border: 2px solid var(--row3-border-color);
+  background-color: var(--row3-bg-color);
+}
