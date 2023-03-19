@@ -1,6 +1,8 @@
 const taskInput = document.querySelector('.task-input');
 const addBtn = document.querySelector('.add');
 const taskBox = document.querySelector('.task-box');
+let taskCompleted = document.querySelector('.task-completed');
+let taskPending = document.querySelector('.task-pending');
 
 // fungsi untuk membuat task list, bool untuk mengecek status task done/tidak (true/tidak)
 let createList = (e, bool = false) => {
@@ -23,6 +25,25 @@ let createList = (e, bool = false) => {
   taskBox.insertAdjacentHTML('afterbegin', newText);
 };
 
+// fungsi untuk mengecek status pending dan complete
+let taskStatus = () => {
+  taskTodos = JSON.parse(localStorage.getItem(TODO_STORAGE));
+
+  let completed = 0,
+    pending = 0;
+  // loop untuk menghitung task pending dan completed
+  for (let key in taskTodos) {
+    if (taskTodos[key] == true) {
+      completed++;
+    } else {
+      pending++;
+    }
+  }
+
+  taskPending.innerHTML = pending;
+  taskCompleted.innerHTML = completed;
+};
+
 // ==============================
 //         LOCAL STORAGE
 // ==============================
@@ -35,6 +56,8 @@ const TODO_STORAGE = 'TODO_STORAGE'; // nama key
 if ((checkLocal = localStorage.getItem(TODO_STORAGE))) {
   // parse untuk mengubah JSON menjadi object
   taskTodos = JSON.parse(checkLocal);
+
+  taskStatus();
 
   // loop isi object
   for (let key in taskTodos) {
@@ -59,6 +82,8 @@ function syncLocalStorage(activity, item, bool = false) {
 
   // stringify utk mengubah nilai javascript menjadi JSON
   localStorage.setItem(TODO_STORAGE, JSON.stringify(taskTodos));
+
+  taskStatus();
 }
 
 // ==============================
