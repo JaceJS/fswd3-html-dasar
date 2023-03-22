@@ -40,22 +40,86 @@ let taskStatus = () => {
     }
   }
 
-  taskPending.innerHTML = pending;
-  taskCompleted.innerHTML = completed;
+  // taskPending.innerHTML = pending;
+  // taskCompleted.innerHTML = completed;
+};
+
+// pembuatan key dan value untuk localstorage dan web API
+let taskTodos = {}; // value dgn tipe data object
+const TODO_STORAGE = 'TODO_STORAGE'; // nama key untuk local storage
+checkLocalStorage = localStorage.getItem(TODO_STORAGE);
+
+// ==============================
+//    API dengan crudcrud.com
+// ==============================
+
+// base url => alamat web
+// endpoint => alamat lokasi file/ resource/ data
+const baseUrl = 'https://crudcrud.com/api/';
+const apiKey = '845ef95962cf450c801b1374d0777816';
+const url = baseUrl + apiKey;
+const endPointTodos = `${url}/todos`;
+
+const getTodosTask = () => {
+  fetch(endPointTodos)
+    .then((response) => response.json())
+    .then((data) => console.log(data));
+};
+
+const postTodosTask = (value, bool = false) => {
+  taskTodos.task = value;
+  taskTodos.isDone = bool;
+  fetch(endPointTodos, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(taskTodos),
+  })
+    .then((result) => console.log('Berhasil di POST' + result.json()))
+    .catch((error) => console.log(error));
+};
+
+const putTodosTask = (value, bool) => {
+  fetch(endPointTodos)
+    .then((response) => response.json())
+    .then((data) => {
+      const taskData = data.find((e) => e.task === value);
+      taskTodos.task = value;
+      taskTodos.isDone = bool;
+      fetch(`${endPointTodos}/${taskData._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(taskTodos),
+      })
+        .then((result) => console.log('Berhasil di PUT' + result.json()))
+        .catch((error) => console.log('terjadi error' + error));
+    });
+};
+
+const deleteTodosTask = (value) => {
+  fetch(endPointTodos)
+    .then((response) => response.json())
+    .then((data) => {
+      const taskData = data.find((e) => e.task === value);
+      fetch(`${endPointTodos}/${taskData._id}`, {
+        method: 'DELETE',
+      })
+        .then((result) => console.log('Berhasil di DELETE' + result.json()))
+        .catch((error) => console.log(error));
+    });
 };
 
 // ==============================
 //         LOCAL STORAGE
 // ==============================
 
-// pembuatan key dan value untuk localstorage
-let taskTodos = {}; // value dgn tipe data object
-const TODO_STORAGE = 'TODO_STORAGE'; // nama key
-
 // membaca data local storage ketika halaman di load
-if ((checkLocal = localStorage.getItem(TODO_STORAGE))) {
+if (checkLocalStorage) {
   // parse untuk mengubah JSON menjadi object
-  taskTodos = JSON.parse(checkLocal);
+  taskTodos = JSON.parse(checkLocalStorage);
 
   taskStatus();
 
@@ -66,14 +130,15 @@ if ((checkLocal = localStorage.getItem(TODO_STORAGE))) {
 }
 
 // fungsi tambah, update, dan hapus local storage
-function syncLocalStorage(activity, item, bool = false) {
+function syncLocalStorage(activity, value, bool = false) {
   switch (activity) {
     case 'ADD':
     case 'UPDATE':
-      taskTodos[item] = bool;
+      taskTodos.task = value;
+      taskTodos.isDone = bool;
       break;
     case 'DELETE':
-      delete taskTodos[item];
+      delete taskTodos[value];
       break;
 
     default:
@@ -95,7 +160,8 @@ taskInput.addEventListener('keyup', (e) => {
   if (e.keyCode === 13) {
     createList(taskInput.value);
 
-    syncLocalStorage('ADD', taskInput.value);
+    postTodosTask(taskInput.value);
+    // syncLocalStorage('ADD', taskInput.value);
 
     taskInput.value = '';
     e.preventDefault();
@@ -106,7 +172,8 @@ taskInput.addEventListener('keyup', (e) => {
 addBtn.addEventListener('click', (e) => {
   createList(taskInput.value);
 
-  syncLocalStorage('ADD', taskInput.value);
+  postTodosTask(taskInput.value);
+  // syncLocalStorage('ADD', taskInput.value);
 
   taskInput.value = '';
   e.preventDefault();
@@ -118,10 +185,12 @@ taskBox.addEventListener('click', (e) => {
     let status = e.target.parentElement.previousElementSibling.classList.toggle('line-through');
     e.target.parentElement.parentElement.classList.toggle('bg-lime-700');
 
-    syncLocalStorage('UPDATE', e.target.parentElement.previousElementSibling.innerText, status);
+    putTodosTask(e.target.parentElement.previousElementSibling.innerText, status);
+    // syncLocalStorage('UPDATE', e.target.parentElement.previousElementSibling.innerText, status);
   } else if (e.target.classList.contains('delete')) {
     e.target.parentElement.parentElement.remove();
 
-    syncLocalStorage('DELETE', e.target.parentElement.previousElementSibling.innerText);
+    deleteTodosTask(e.target.parentElement.previousElementSibling.innerText);
+    // syncLocalStorage('DELETE', e.target.parentElement.previousElementSibling.innerText);
   }
 });
