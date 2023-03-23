@@ -5,18 +5,18 @@ let taskCompleted = document.querySelector('.task-completed');
 let taskPending = document.querySelector('.task-pending');
 
 // fungsi untuk membuat task list, bool untuk mengecek status task done/tidak (true/tidak)
-let createList = (e, bool = false) => {
+let createList = (inputValue, bool = false) => {
   // penambahan kelas jika task true
   let lineThrough, doneBgColor;
-  let isDone = true;
+  const checkisDone = true;
   // jika isDone = true dan bool = true
-  if (isDone == bool) {
+  if (checkisDone == bool) {
     lineThrough = 'line-through';
     doneBgColor = 'bg-lime-700';
   }
 
   let newText = `<div class="task-list py-2 px-3 flex justify-between bg-rose-600 rounded-full mb-2 ${doneBgColor}">
-    <p class="task-desc ${lineThrough}">${e}</p>
+    <p class="task-desc ${lineThrough}">${inputValue}</p>
     <div class="task-desc-btn">
         <i class="done fa-solid fa-check mr-1.5 opacity-80 hover:opacity-100 cursor-pointer"></i>
         <i class="delete fa-solid fa-trash opacity-80 hover:opacity-100 cursor-pointer"></i>
@@ -44,10 +44,8 @@ let taskStatus = () => {
   // taskCompleted.innerHTML = completed;
 };
 
-// pembuatan key dan value untuk localstorage dan web API
-let taskTodos = {}; // value dgn tipe data object
-const TODO_STORAGE = 'TODO_STORAGE'; // nama key untuk local storage
-checkLocalStorage = localStorage.getItem(TODO_STORAGE);
+// pembuatan variabel dgn tipe data object untuk menampung nilai input
+let taskTodos = {};
 
 // ==============================
 //    API dengan crudcrud.com
@@ -56,15 +54,22 @@ checkLocalStorage = localStorage.getItem(TODO_STORAGE);
 // base url => alamat web
 // endpoint => alamat lokasi file/ resource/ data
 const baseUrl = 'https://crudcrud.com/api/';
-const apiKey = '845ef95962cf450c801b1374d0777816';
+const apiKey = 'a4b1a80c96df409890d348345b1384d2';
 const url = baseUrl + apiKey;
 const endPointTodos = `${url}/todos`;
 
-const getTodosTask = () => {
+// mengecek data di API, kemudian membuat list sesuai dengan data yang ada
+const checkTodosTask = () => {
   fetch(endPointTodos)
     .then((response) => response.json())
-    .then((data) => console.log(data));
+    .then((data) => {
+      for (const value of data) {
+        createList(value.task, value.isDone);
+      }
+    });
 };
+
+checkTodosTask();
 
 const postTodosTask = (value, bool = false) => {
   taskTodos.task = value;
@@ -115,6 +120,9 @@ const deleteTodosTask = (value) => {
 // ==============================
 //         LOCAL STORAGE
 // ==============================
+
+const TODO_STORAGE = 'TODO_STORAGE';
+const checkLocalStorage = localStorage.getItem(TODO_STORAGE);
 
 // membaca data local storage ketika halaman di load
 if (checkLocalStorage) {
