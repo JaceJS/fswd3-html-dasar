@@ -33,8 +33,7 @@ let taskTodosLocalStorage = {};
 //    API dengan crudcrud.com
 // ==============================
 
-// base url => alamat web
-// endpoint => alamat lokasi file/ resource/ data
+// pembuatan link untuk request API
 const baseUrl = 'https://crudcrud.com/api/';
 const apiKey = '447df10fd40a43c2bcd69a087604131a';
 const url = baseUrl + apiKey;
