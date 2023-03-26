@@ -166,6 +166,7 @@ aside li {
 
   /* main */
   .container {
+    height: auto; 
     flex-direction: column;
   }
 
