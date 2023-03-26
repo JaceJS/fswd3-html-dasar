@@ -5,7 +5,7 @@ let taskCompleted = document.querySelector('.task-completed');
 let taskPending = document.querySelector('.task-pending');
 
 // fungsi untuk membuat task list, bool untuk mengecek status task done/tidak (true/tidak)
-let createList = (inputValue, bool = false) => {
+const createList = (inputValue, bool = false) => {
   // penambahan kelas jika task true
   let lineThrough, doneBgColor;
   const checkisDone = true;
@@ -25,27 +25,9 @@ let createList = (inputValue, bool = false) => {
   taskBox.insertAdjacentHTML('afterbegin', newText);
 };
 
-// fungsi untuk mengecek status pending dan complete
-let taskStatus = () => {
-  taskTodos = JSON.parse(localStorage.getItem(TODO_STORAGE));
-
-  let completed = 0,
-    pending = 0;
-  // loop untuk menghitung task pending dan completed
-  for (let key in taskTodos) {
-    if (taskTodos[key] == true) {
-      completed++;
-    } else {
-      pending++;
-    }
-  }
-
-  // taskPending.innerHTML = pending;
-  // taskCompleted.innerHTML = completed;
-};
-
 // pembuatan variabel dgn tipe data object untuk menampung nilai input
-let taskTodos = {};
+let taskTodosAPI = {};
+let taskTodosLocalStorage = {};
 
 // ==============================
 //    API dengan crudcrud.com
@@ -54,7 +36,7 @@ let taskTodos = {};
 // base url => alamat web
 // endpoint => alamat lokasi file/ resource/ data
 const baseUrl = 'https://crudcrud.com/api/';
-const apiKey = 'a4b1a80c96df409890d348345b1384d2';
+const apiKey = '447df10fd40a43c2bcd69a087604131a';
 const url = baseUrl + apiKey;
 const endPointTodos = `${url}/todos`;
 
@@ -71,15 +53,34 @@ const checkTodosTask = () => {
 
 checkTodosTask();
 
+// fungsi untuk mengecek status pending dan complete untuk API
+const taskStatusAPI = () => {
+  let completed = 0,
+    pending = 0;
+  fetch(endPointTodos)
+    .then((response) => response.json())
+    .then((data) => {
+      for (const value of data) {
+        if (value.isDone == true) {
+          completed++;
+        } else {
+          pending++;
+        }
+      }
+      taskCompleted.innerHTML = completed;
+      taskPending.innerHTML = pending;
+    });
+};
+
 const postTodosTask = (value, bool = false) => {
-  taskTodos.task = value;
-  taskTodos.isDone = bool;
+  taskTodosAPI.task = value;
+  taskTodosAPI.isDone = bool;
   fetch(endPointTodos, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(taskTodos),
+    body: JSON.stringify(taskTodosAPI),
   })
     .then((result) => console.log('Berhasil di POST' + result.json()))
     .catch((error) => console.log(error));
@@ -90,14 +91,14 @@ const putTodosTask = (value, bool) => {
     .then((response) => response.json())
     .then((data) => {
       const taskData = data.find((e) => e.task === value);
-      taskTodos.task = value;
-      taskTodos.isDone = bool;
+      taskTodosAPI.task = value;
+      taskTodosAPI.isDone = bool;
       fetch(`${endPointTodos}/${taskData._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(taskTodos),
+        body: JSON.stringify(taskTodosAPI),
       })
         .then((result) => console.log('Berhasil di PUT' + result.json()))
         .catch((error) => console.log('terjadi error' + error));
@@ -122,31 +123,41 @@ const deleteTodosTask = (value) => {
 // ==============================
 
 const TODO_STORAGE = 'TODO_STORAGE';
-const checkLocalStorage = localStorage.getItem(TODO_STORAGE);
 
-// membaca data local storage ketika halaman di load
-if (checkLocalStorage) {
-  // parse untuk mengubah JSON menjadi object
-  taskTodos = JSON.parse(checkLocalStorage);
+// fungsi untuk mengecek status pending dan complete untuk local storage
+const taskStatusLocalStorage = () => {
+  taskTodosLocalStorage = JSON.parse(localStorage.getItem(TODO_STORAGE));
 
-  taskStatus();
+  let completed = 0,
+    pending = 0;
 
-  // loop isi object
-  for (let key in taskTodos) {
-    createList(key, taskTodos[key]);
+  // loop untuk menghitung task pending dan completed
+  for (let value in taskTodosLocalStorage) {
+    if (taskTodosLocalStorage[value] == true) {
+      completed++;
+    } else {
+      pending++;
+    }
   }
+
+  taskPending.innerHTML = pending;
+  taskCompleted.innerHTML = completed;
+};
+
+// mengecek status pending dan complete local storage ketika halaman di load
+if (localStorage.getItem(TODO_STORAGE)) {
+  taskStatusLocalStorage();
 }
 
 // fungsi tambah, update, dan hapus local storage
-function syncLocalStorage(activity, value, bool = false) {
+const syncLocalStorage = (activity, value, bool = false) => {
   switch (activity) {
     case 'ADD':
     case 'UPDATE':
-      taskTodos.task = value;
-      taskTodos.isDone = bool;
+      taskTodosLocalStorage[value] = bool;
       break;
     case 'DELETE':
-      delete taskTodos[value];
+      delete taskTodosLocalStorage[value];
       break;
 
     default:
@@ -154,10 +165,10 @@ function syncLocalStorage(activity, value, bool = false) {
   }
 
   // stringify utk mengubah nilai javascript menjadi JSON
-  localStorage.setItem(TODO_STORAGE, JSON.stringify(taskTodos));
+  localStorage.setItem(TODO_STORAGE, JSON.stringify(taskTodosLocalStorage));
 
-  taskStatus();
-}
+  taskStatusLocalStorage();
+};
 
 // ==============================
 //    INTERAKSI TOMBOL-TOMBOL
@@ -169,7 +180,7 @@ taskInput.addEventListener('keyup', (e) => {
     createList(taskInput.value);
 
     postTodosTask(taskInput.value);
-    // syncLocalStorage('ADD', taskInput.value);
+    syncLocalStorage('ADD', taskInput.value);
 
     taskInput.value = '';
     e.preventDefault();
@@ -181,7 +192,7 @@ addBtn.addEventListener('click', (e) => {
   createList(taskInput.value);
 
   postTodosTask(taskInput.value);
-  // syncLocalStorage('ADD', taskInput.value);
+  syncLocalStorage('ADD', taskInput.value);
 
   taskInput.value = '';
   e.preventDefault();
@@ -194,11 +205,11 @@ taskBox.addEventListener('click', (e) => {
     e.target.parentElement.parentElement.classList.toggle('bg-lime-700');
 
     putTodosTask(e.target.parentElement.previousElementSibling.innerText, status);
-    // syncLocalStorage('UPDATE', e.target.parentElement.previousElementSibling.innerText, status);
+    syncLocalStorage('UPDATE', e.target.parentElement.previousElementSibling.innerText, status);
   } else if (e.target.classList.contains('delete')) {
     e.target.parentElement.parentElement.remove();
 
     deleteTodosTask(e.target.parentElement.previousElementSibling.innerText);
-    // syncLocalStorage('DELETE', e.target.parentElement.previousElementSibling.innerText);
+    syncLocalStorage('DELETE', e.target.parentElement.previousElementSibling.innerText);
   }
 });
